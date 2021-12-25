@@ -1,10 +1,9 @@
 import { PlusSquareOutlined } from "@ant-design/icons/lib/icons"
 import { Button, Collapse, Typography } from "antd"
 import CollapsePanel from "antd/lib/collapse/CollapsePanel"
-import { useContext, useMemo } from "react"
+import { useContext } from "react"
 import styled from "styled-components"
-import { AuthContext } from "../../Context/AuthProvider"
-import useFirestore from "../../hooks/useFirestore"
+import { AppContext } from "../../Context/AppProvider"
 const PanelStyled = styled(CollapsePanel)`
   &&& {
     .ant-collapse-header,
@@ -29,20 +28,9 @@ const LinkStyled = styled(Typography.Link)`
   padding: 12px 0;
 `
 function RoomList() {
-  const {
-    user: { uid },
-  } = useContext(AuthContext)
-  const roomsCondition = useMemo(
-    () => ({
-      fieldName: "members",
-      operator: "array-contains",
-      compareValue: uid,
-    }),
-    [uid]
-  )
-  console.log(uid)
-  const rooms = useFirestore("rooms", roomsCondition)
+  const { rooms } = useContext(AppContext)
   console.log(rooms)
+
   return (
     <Collapse ghost defaultActiveKey={["1"]}>
       <PanelStyled header="Danh sách các phòng" key="1">

@@ -3,14 +3,17 @@ import { Route, Routes, BrowserRouter } from "react-router-dom"
 import Login from "./component/Login"
 import ChatRoom from "./component/ChatRoom"
 import AuthProvider from "./Context/AuthProvider"
+import AppProvider from "./Context/AppProvider"
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route element={<Login />} path="/login" />
-          <Route element={<ChatRoom />} path="/" />
-        </Routes>
+        <AppProvider>
+          <Routes>
+            <Route element={<Login />} path="/login" />
+            <Route element={<ChatRoom />} path="/" />
+          </Routes>
+        </AppProvider>
       </AuthProvider>
     </BrowserRouter>
   )
