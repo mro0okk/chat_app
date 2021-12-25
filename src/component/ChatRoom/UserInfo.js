@@ -1,6 +1,7 @@
 import { Avatar, Button } from "antd"
 import Text from "antd/lib/typography/Text"
 import styled from "styled-components"
+import { auth } from "../../firebase/config"
 const WrapperStyled = styled.div`
 display:flex;
 justify-content:space-between;
@@ -19,7 +20,12 @@ function UserInfo() {
         <Text>HoanNguyen</Text>
       </div>
       <div>
-        <Button ghost onClick={() => {}}>
+        <Button
+          ghost
+          onClick={() => {
+            auth.signOut()
+          }}
+        >
           Đăng xuất{" "}
         </Button>
       </div>
