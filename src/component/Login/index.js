@@ -1,10 +1,18 @@
 import { Button, Col, Row } from "antd"
 import Title from "antd/lib/typography/Title"
-import firebase, { auth } from "../../firebase/config"
+import firebase, { auth, db } from "../../firebase/config"
 const fbProvider = new firebase.auth.FacebookAuthProvider()
 function Login() {
   const handleLogin = async () => {
-    auth.signInWithPopup(fbProvider)
+    const { additionalUserInfo, user } = await auth.signInWithPopup(fbProvider)
+    if (additionalUserInfo?.isNewUser) {
+      db.collection("users").add({
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        uid: user.uid,
+        providerId: additionalUserInfo.providerId,
+      })
+    }
   }
 
   return (
