@@ -13,7 +13,7 @@ function useFirestore(collection, condition) {
       collectionRef = collectionRef.where(
         condition.fieldName,
         condition.operator,
-        condition.value
+        condition.compareValue
       )
     }
     const unsubcribed = collectionRef.onSnapshot((snapshot) => {
