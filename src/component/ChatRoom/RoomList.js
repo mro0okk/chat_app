@@ -2,6 +2,7 @@ import { PlusSquareOutlined } from "@ant-design/icons/lib/icons"
 import { Button, Collapse, Typography } from "antd"
 import CollapsePanel from "antd/lib/collapse/CollapsePanel"
 import styled from "styled-components"
+import useFirestore from "../../hooks/useFirestore"
 const PanelStyled = styled(CollapsePanel)`
   &&& {
     .ant-collapse-header,
@@ -26,6 +27,7 @@ const LinkStyled = styled(Typography.Link)`
   padding: 12px 0;
 `
 function RoomList() {
+  const rooms = useFirestore("rooms")
   return (
     <Collapse ghost defaultActiveKey={["1"]}>
       <PanelStyled header="Danh sách các phòng" key="1">

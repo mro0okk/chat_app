@@ -15,16 +15,6 @@ border-bottom: 1px solid rgba(83,38,83,0.6);
 `
 function UserInfo() {
   const { user } = useContext(AuthContext)
-  useEffect(() => {
-    db.collection("users").onSnapshot((snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }))
-      console.log({ data, snapshot, docs: snapshot.docs })
-    })
-  }, [])
-
   console.log(user)
   return (
     <WrapperStyled>
