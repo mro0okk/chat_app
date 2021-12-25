@@ -1,9 +1,9 @@
 import { Avatar, Button } from "antd"
 import Text from "antd/lib/typography/Text"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import styled from "styled-components"
 import { AuthContext } from "../../Context/AuthProvider"
-import { auth } from "../../firebase/config"
+import { auth, db } from "../../firebase/config"
 const WrapperStyled = styled.div`
 display:flex;
 justify-content:space-between;
@@ -15,6 +15,16 @@ border-bottom: 1px solid rgba(83,38,83,0.6);
 `
 function UserInfo() {
   const { user } = useContext(AuthContext)
+  useEffect(() => {
+    db.collection("users").onSnapshot((snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+      console.log({ data, snapshot, docs: snapshot.docs })
+    })
+  }, [])
+
   console.log(user)
   return (
     <WrapperStyled>
