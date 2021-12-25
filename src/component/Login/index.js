@@ -1,8 +1,11 @@
 import { Button, Col, Row } from "antd"
 import Title from "antd/lib/typography/Title"
-
+import firebase, { auth } from "../../firebase/config"
+const fbProvider = new firebase.auth.FacebookAuthProvider()
 function Login() {
-  const handleLogin = async () => {}
+  const handleLogin = async () => {
+    auth.signInWithPopup(fbProvider)
+  }
 
   return (
     <div>
