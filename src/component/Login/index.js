@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "antd"
 import Title from "antd/lib/typography/Title"
-import firebase, { auth, db } from "../../firebase/config"
-import { addDocument } from "../../firebase/service"
+import firebase, { auth } from "../../firebase/config"
+import { addDocument, generateKeywords } from "../../firebase/service"
 const fbProvider = new firebase.auth.FacebookAuthProvider()
 function Login() {
   const handleLogin = async () => {
@@ -9,9 +9,11 @@ function Login() {
     if (additionalUserInfo?.isNewUser) {
       addDocument("users", {
         displayName: user.displayName,
+        email: user.email,
         photoURL: user.photoURL,
         uid: user.uid,
         providerId: additionalUserInfo.providerId,
+        keywords: generateKeywords(user.displayName),
       })
     }
   }

@@ -28,8 +28,7 @@ const LinkStyled = styled(Typography.Link)`
   padding: 12px 0;
 `
 function RoomList() {
-  const { rooms, setVisible } = useContext(AppContext)
-  console.log(rooms)
+  const { rooms, setVisible, setSelectedRoomId } = useContext(AppContext)
   const handleAddRoom = () => {
     setVisible(true)
   }
@@ -37,7 +36,9 @@ function RoomList() {
     <Collapse ghost defaultActiveKey={["1"]}>
       <PanelStyled header="Danh sách các phòng" key="1">
         {rooms.map((room) => (
-          <LinkStyled key={room.id}>{room.name}</LinkStyled>
+          <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>
+            {room.name}
+          </LinkStyled>
         ))}
         <Button
           type="text"

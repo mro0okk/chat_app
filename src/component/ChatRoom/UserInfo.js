@@ -15,7 +15,6 @@ border-bottom: 1px solid rgba(83,38,83,0.6);
 `
 function UserInfo() {
   const { user } = useContext(AuthContext)
-  console.log(user)
   return (
     <WrapperStyled>
       <div>

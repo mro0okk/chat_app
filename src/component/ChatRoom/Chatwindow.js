@@ -1,10 +1,14 @@
 import { UserAddOutlined } from "@ant-design/icons/lib/icons"
-import { Button, Input, Tooltip } from "antd"
+import { Alert, Button, Input, Tooltip, Form } from "antd"
 import { Group } from "antd/lib/avatar"
 import Avatar from "antd/lib/avatar/avatar"
-import Form from "antd/lib/form/Form"
-import Item from "antd/lib/list/Item"
+import FormItem from "antd/lib/form/FormItem"
+import { useContext, useMemo, useState } from "react"
 import styled from "styled-components"
+import { AppContext } from "../../Context/AppProvider"
+import { AuthContext } from "../../Context/AuthProvider"
+import { addDocument } from "../../firebase/service"
+import useFirestore from "../../hooks/useFirestore"
 import Message from "./Message"
 
 const HeaderStyled = styled.div`
@@ -63,81 +67,105 @@ const MessageListStyled = styled.div`
 `
 
 function ChatWindow() {
+  const { selectedRoom, members, setIsInviteMemberVisible } =
+    useContext(AppContext)
+  const {
+    user: { uid, photoURL, displayName },
+  } = useContext(AuthContext)
+  const [inputVal, setInputVal] = useState("")
+  const [form] = Form.useForm()
+  const handleInputChange = (e) => {
+    setInputVal(e.target.value)
+  }
+  const handleOnSubmit = () => {
+    addDocument("messages", {
+      text: inputVal,
+      uid,
+      photoURL,
+      roomId: selectedRoom.id,
+      displayName,
+    })
+    form.resetFields(["messages"])
+  }
+  const condition = useMemo(
+    () => ({
+      fieldName: "roomId",
+      operator: "==",
+      compareValue: selectedRoom.id,
+    }),
+    [selectedRoom.id]
+  )
+  const messages = useFirestore("messages", condition)
   return (
     <WrapperStyled>
-      <HeaderStyled>
-        <div className="header__info">
-          <p className="header__title">Room 1</p>
-          <span className="header__description"> Đây là room 1</span>
-        </div>
-        <ButtonGroupStyle>
-          <Button icon={<UserAddOutlined />}>Mời</Button>
-          <Group size="small" maxCount={2}>
-            <Tooltip title="A">
-              <Avatar>A</Avatar>
-            </Tooltip>
-            <Tooltip title="B">
-              <Avatar>B</Avatar>
-            </Tooltip>
-            <Tooltip title="C">
-              <Avatar>C</Avatar>
-            </Tooltip>
-            <Tooltip title="D">
-              <Avatar>E</Avatar>
-            </Tooltip>
-            <Tooltip title="E">
-              <Avatar>F</Avatar>
-            </Tooltip>{" "}
-            <Tooltip title="F">
-              <Avatar>G</Avatar>
-            </Tooltip>
-          </Group>
-        </ButtonGroupStyle>
-      </HeaderStyled>
-      <ContentStyled>
-        <MessageListStyled>
-          <Message
-            text="Test"
-            photoURL={null}
-            displayName={"KID"}
-            createAt={141214121412}
-          ></Message>
-          <Message
-            text="Test"
-            photoURL={null}
-            displayName={"KID"}
-            createAt={141214121412}
-          ></Message>{" "}
-          <Message
-            text="Test"
-            photoURL={null}
-            displayName={"KID"}
-            createAt={141214121412}
-          ></Message>{" "}
-          <Message
-            text="Test"
-            photoURL={null}
-            displayName={"KID"}
-            createAt={141214121412}
-          ></Message>{" "}
-          <Message
-            text="Test"
-            photoURL={null}
-            displayName={"KID"}
-            createAt={141214121412}
-          ></Message>
-        </MessageListStyled>
-        <FormStyled>
-          <Item>
-            <Input
-              placeholder="tin nhắn..."
-              bordered={false}
-              autoComplete="off"
-            />
-          </Item>
-          <Button type="primary">Gửi</Button>
-        </FormStyled>
-      </ContentStyled>
+      {selectedRoom.id ? (
+        <>
+          <HeaderStyled>
+            <div className="header__info">
+              <p className="header__title">
+                {selectedRoom && selectedRoom.name}
+              </p>
+              <span className="header__description">
+                {selectedRoom && selectedRoom.description}
+              </span>
+            </div>
+            <ButtonGroupStyle>
+              <Button
+                icon={<UserAddOutlined />}
+                onClick={() => setIsInviteMemberVisible(true)}
+              >
+                Mời
+              </Button>
+              <Group size="small" maxCount={2}>
+                {members.map((member) => (
+                  <Tooltip key={member.id} title={member.displayName}>
+                    <Avatar src={member.photoURL}>
+                      {member.photoURL
+                        ? ""
+                        : member.displayName.charAt(0)?.toUpperCase()}
+                    </Avatar>
+                  </Tooltip>
+                ))}
+              </Group>
+            </ButtonGroupStyle>
+          </HeaderStyled>
+          <ContentStyled>
+            <MessageListStyled>
+              {messages.map((mess) => (
+                <Message
+                  key={mess.id}
+                  text={mess.text}
+                  photoURL={mess.photoURL}
+                  displayName={mess.displayName}
+                  createAt={mess.createAt}
+                ></Message>
+              ))}
+            </MessageListStyled>
+            <FormStyled form={form}>
+              <FormItem name="messages">
+                <Input
+                  onChange={(e) => handleInputChange(e)}
+                  onPressEnter={() => handleOnSubmit()}
+                  placeholder="tin nhắn..."
+                  bordered={false}
+                  autoComplete="off"
+                />
+              </FormItem>
+              <Button type="primary" onClick={() => handleOnSubmit()}>
+                Gửi
+              </Button>
+            </FormStyled>
+          </ContentStyled>
+        </>
+      ) : (
+        <Alert
+          message="Hãy chọn phòng"
+          type="info"
+          showIcon
+          style={{ margin: "5" }}
+          closable
+        />
+      )}
     </WrapperStyled>
   )
 }
